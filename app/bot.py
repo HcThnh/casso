@@ -1,4 +1,3 @@
-import asyncio
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
@@ -8,25 +7,21 @@ from app.state import carts, get_chat_history
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.message.from_user.id)
-    carts.clear_cart(user_id) # Reset cart on start
+    carts.clear_cart(user_id)
     await update.message.reply_text("Dạ tiệm trà sữa cô Mai xin chào! Con muốn uống gì hôm nay cô làm ạ? Mời con xem menu hoặc cứ hỏi cô nhé!")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.message.from_user.id)
     user_text = update.message.text
     
-    # Send typing action
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
     
-    # Gọi AI API
     response_text = await process_user_message(user_id, user_text)
     
     if "||CHECKOUT_TRIGGERED||" in response_text:
-        # Nếu AI đã nhảy vào hàm checkout
         clean_res = response_text.replace("||CHECKOUT_TRIGGERED||", "")
         await update.message.reply_text(clean_res)
         
-        # Bắt đầu gọi API PayOS...
         total = carts.get_total(user_id)
         if total == 0:
             await update.message.reply_text("Ủa giỏ hàng của con chưa có gì hết trơn. Con chọn món đi rồi mình tính nha.")
@@ -46,7 +41,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         from app.state import order_code_to_user
         import time
         
-        # Tạo order code ngẫu nhiên dựa trên thời gian
         order_code = int(time.time() * 1000) % 1000000000
         order_code_to_user[order_code] = user_id
         

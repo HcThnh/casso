@@ -1,4 +1,3 @@
-import time
 from payos import PayOS, ItemData, PaymentData
 from app.config import PAYOS_CLIENT_ID, PAYOS_API_KEY, PAYOS_CHECKSUM_KEY
 
@@ -11,7 +10,6 @@ payos_client = PayOS(
 def create_payment_link(order_code: int, amount: int, description: str, items: list) -> str:
     """Tạo link thanh toán từ PayOS, trả về URL của mã QR thanh toán"""
     try:
-        # Chuẩn bị dữ liệu
         item_data_list = []
         for line in items:
             item_data_list.append(ItemData(name=line['name'], quantity=line['quantity'], price=line['price']))

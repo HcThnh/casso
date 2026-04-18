@@ -1,13 +1,11 @@
 import hmac
 import hashlib
-import json
-import time
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 
-from app.config import PAYOS_CHECKSUM_KEY, TELEGRAM_BOT_TOKEN
-from app.state import carts, order_code_to_user, chat_histories
+from app.config import PAYOS_CHECKSUM_KEY
+from app.state import carts, order_code_to_user
 
 app = FastAPI(title="Trà Sữa Cô Mai - Webhook Server")
 

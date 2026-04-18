@@ -6,7 +6,6 @@ from app.menu import get_menu_text, get_item_details
 
 client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
-# Định nghĩa các tools cho AI
 tools = [
     {
         "type": "function",
@@ -75,12 +74,10 @@ async def process_user_message(user_id: str, message: str) -> str:
     
     messages = [{"role": "system", "content": get_system_prompt()}]
     for msg in get_chat_history(user_id):
-        # Filter ra chỉ giữ role và content (loại bỏ tool_calls logic phức tạp khỏi history ngắn gọn này nếu cẩn thận, nhưng mặc định cứ đẩy vào)
         if "role" in msg and "content" in msg:
             if msg["content"] is not None:
                 messages.append({"role": msg["role"], "content": msg["content"]})
     
-    # Giới hạn context, bỏ qua tool calls error, để đơn giản:
     clean_msgs = [m for m in messages if m["role"] in ["system", "user", "assistant"]]
 
     try:
@@ -95,7 +92,6 @@ async def process_user_message(user_id: str, message: str) -> str:
         response_message = response.choices[0].message
         
         if response_message.tool_calls:
-            # AI request call function
             tool_calls = response_message.tool_calls
             tool_res_text = ""
             is_checkout = False
@@ -138,12 +134,8 @@ async def process_user_message(user_id: str, message: str) -> str:
                     is_checkout = True
                     tool_res_text += "Hệ thống: Đang tạo mã QR thanh toán...\n"
 
-            # Re-call AI with tool results
             clean_msgs.append(response_message)
             for i, tool_call in enumerate(tool_calls):
-                # Để đơn giản, gán toàn bộ feedback cho tool đầu tiên và các tool sau báo OK, hoặc chia đều logic
-                # Ở đây ta gửi string tool_res_text cho tool cuối, các tool trước gửi 'ok'. Hoặc tốt nhất là process độc lập.
-                # Do code trên dồn chung vào tool_res_text, tạm fix đơn giản để pass API:
                 result = tool_res_text if i == len(tool_calls)-1 else "ok"
                 clean_msgs.append({"role": "tool", "tool_call_id": tool_call.id, "name": tool_call.function.name, "content": result})
             
