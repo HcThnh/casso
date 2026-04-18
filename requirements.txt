@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-telegram-bot
+openai
+payos
+pydantic
+pydantic-settings
+python-dotenv
+pandas
+httpx

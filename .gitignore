@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# Environment
+.env
+
+# Temp files
+pdf_text.txt
+check_pdf_libs.py
+extract_pdf.py
+
+# IDE
+.vscode/
+.idea/
